@@ -99,5 +99,8 @@ with open(processed_cpu_file, 'w') as out:
                     out.write("\t" + str(relative_cpu_time))
 
         out.write("\n")
+        if (node == 0 and depth == 3):
+            out.write("4\tNaN\tNaN\tNaN\n")
+
 print "Done"
 

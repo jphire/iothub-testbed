@@ -80,6 +80,11 @@ def is_number(s):
 def prettify(tag):
     return tags_map[tag]
 
+def getTotalNodeCount(nesting_level, node):
+    total_node_count = node
+    if (nesting_level == '2' or nesting_level == '3'):
+        total_node_count = int(node) * 4 if nesting_level == '2' else int(node) * 8
+    return str(total_node_count)
 
 def getLatestTimestamp():
     latest = 0

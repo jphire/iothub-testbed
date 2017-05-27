@@ -17,7 +17,9 @@ $ python create-results.py -d urlMapped
 latest = 0
 sizes = []
 nodes = []
+nodes2 = []
 depths = []
+nesting_level = 1
 results_path = ''
 logs_path = ''
 nodeCountMultiplier = 1
@@ -29,9 +31,9 @@ tags = ['feed_fetched', 'after_data_fetch', 'execution_end', 'after_data_map', '
 
 try:
     argv = sys.argv[1:]
-    opts, args = getopt.getopt(argv, "d:m:")
+    opts, args = getopt.getopt(argv, "d:m:n:")
 except getopt.GetoptError:
-    print 'create-results.py -d <source_path> -m <mapping_type>'
+    print 'create-results.py -d <source_path> -m <mapping_type> -n <depth>'
     sys.exit(2)
 
 for opt, arg in opts:
@@ -40,6 +42,8 @@ for opt, arg in opts:
         results_path = '../results/' + str(arg)
     elif opt == '-m':
         mapping = str(arg)
+    elif opt == '-n':
+        nesting_level = str(arg)
 
 if results_path == '':
     latest, logs_path = utils.getLatestTimestamp()
@@ -79,10 +83,10 @@ for depth in depths:
             filename = "-".join([str(node), 'node', mapping, size, 'depth', depth])
             ret = utils.run(os.path.join(logs_path, filename), str(node), str(size))
             print '----------------------------------------------'
-            print 'Size: ' + size
-            print 'Depth: ' + depth
-            print 'Node: ' + node
-            print 'CPU: ' + ret['cpu']
+            print 'Size: ' + str(size)
+            print 'Depth: ' + str(depth)
+            print 'Node: ' + str(node)
+            print 'CPU: ' + str(ret['cpu'])
             print '++++++++++++++++++++++++++++++++++++++++++++++'
             # Write the averages
             for name in types:
@@ -95,7 +99,7 @@ for depth in depths:
 
                 if name == 'profile':
                     outfile = os.path.join(results_path, str(node) + "-" + str(size) + '-' + str(depth) + '-profile')
-                    # Write all profiling data
+                    
                     with open(outfile, 'a') as out:
                         profile = ret[name]
                         # To keep correct order in tags, use list
@@ -104,26 +108,36 @@ for depth in depths:
                                 # print "\t".join([tag, str(means[tag][0]), str(means[tag][1]), str(means[tag][2]), "0.6", "\n"])
                                 out.write("\t".join([tag, str(profile[tag][0]), str(profile[tag][1]), str(profile[tag][2]), "\n"]))
                 else:
+                    # Write all other than profile data
                     outfile = os.path.join(results_path, name + ".out")
 
                     with open(outfile, 'a') as out:
                         # print outfile, "\t".join([ret['nodes'], str(ret[name][0]), str(ret[name][1]), str(ret[name][2])])
                         if is_first:
-                            out.write("\t".join([ret['nodes'], str(ret[name][0]), str(ret[name][1]), str(ret[name][2]), "0.6", "\t"]))
+                            nodeCount = utils.getTotalNodeCount(nesting_level, ret['nodes'])
+                            out.write("\t".join([nodeCount, str(ret[name][0]), str(ret[name][1]), str(ret[name][2]), "0.6", "\t"]))
                         else:
                             out.write("\t".join([str(ret[name][0]), str(ret[name][1]), str(ret[name][2]), "0.6", "\t"]))
+
             is_first = False
         for name in types:
             outf = os.path.join(results_path, name + ".out")
             with open(outf, 'a') as out:
                 out.write("\n")
+                # Add empty row for correct comparing with nested-2 results
+                if (nesting_level == '3' and node == 0 and name in ['mem', 'latency']):
+                    out.write("4\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\n")
 
-# Aggregate data to plottable files
+# Aggregate data for the profile plots
 tags_data = {}
 for depth in depths:
     for node in nodes:
         node = int(node)
-        profile_file = os.path.join(results_path, str(node) + '-nodes-' + str(depth) + '-depth-profile-stacked')
+        
+        # Change total node amount to profile output files to be correct
+        total_node_count = utils.getTotalNodeCount(nesting_level, node)
+
+        profile_file = os.path.join(results_path, total_node_count + '-nodes-' + str(depth) + '-depth-profile-stacked')
         with open(profile_file, 'a') as prof:
             prof.write("Size\t")
             if node == 0:

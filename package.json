@@ -1,7 +1,7 @@
 {
-  "name": "solmuhub-feed-tester",
-  "version": "1.0.0",
-  "description": "",
+  "name": "solmuhub-testbed",
+  "version": "0.2.0",
+  "description": "Solmuhub testbed implementation",
   "main": "data1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
