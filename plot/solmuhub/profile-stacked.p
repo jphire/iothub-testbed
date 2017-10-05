@@ -28,20 +28,25 @@ set ylabel "Relative time spent"
 
 set format y "%.0f%%"
 
-set output '../../figures/profiles-urlMapped.pdf'
+set output '../../figures/profiles-urlMapped-u.pdf'
 
-set title ""
+set notitle
 
 # define box colors
 set palette rgbformulae 7,5,15
 unset colorbox
+
+# define functions to determine color and title
+colorfunc(x) = x == 2 ? 2/9. : x == 3 ? 3/9. : x == 4 ? 0/9. : x == 5 ? 8/9. : False
+gettitle(y) = y == 4 ? 'Executing code' : ''
+
 
 plot newhistogram "2-Nodes" lt 1, '../../results/urlMapped/2-nodes-1-depth-profile-stacked' u (100.*$2/$9):xtic(1) lt palette frac 2/9. ti column(2), for [i=3:9] '' using (100.*(column(i)-column(i-1))/$9) lt palette frac i/9. ti column(i), \
 	 newhistogram "4-Nodes" lt 1, '../../results/urlMapped/4-nodes-1-depth-profile-stacked' u (100.*$2/$9):xtic(1) lt palette frac 2/9. notitle, for [i=3:9] '' using (100.*(column(i)-column(i-1))/$9) lt palette frac i/9. notitle, \
 	 newhistogram "8-Nodes" lt 1, '../../results/urlMapped/8-nodes-1-depth-profile-stacked' u (100.*$2/$9):xtic(1) lt palette frac 2/9. notitle, for [i=3:9] '' using (100.*(column(i)-column(i-1))/$9) lt palette frac i/9. notitle, \
      newhistogram "16-Nodes" lt 1, '../../results/urlMapped/16-nodes-1-depth-profile-stacked' u (100.*$2/$9):xtic(1) lt palette frac 2/9. notitle, for [i=3:9] '' using (100.*(column(i)-column(i-1))/$9) lt palette frac i/9. notitle, \
      newhistogram "32-Nodes" lt 1, '../../results/urlMapped/32-nodes-1-depth-profile-stacked' u (100.*$2/$9):xtic(1) lt palette frac 2/9. notitle, for [i=3:9] '' using (100.*(column(i)-column(i-1))/$9) lt palette frac i/9. notitle, \
-     newhistogram "Local" lt 6, '../../results/urlMapped/0-nodes-1-depth-profile-stacked' u (100.*$2/$5):xtic(1) lt palette frac 2/5. ti column(2), for [i=3:5] '' using (100.*column(i)/$5) lt palette frac i/5. title column(i), \
+     newhistogram "Local" lt 6, '../../results/urlMapped/0-nodes-1-depth-profile-stacked' u (100.*$2/$5):xtic(1) lt palette frac colorfunc(2) notitle, for [i=3:5] '' using (100.*(column(i)-column(i-1))/$5) lt palette frac colorfunc(i) title gettitle(i)
 
 unset output
 reset

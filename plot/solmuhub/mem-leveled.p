@@ -18,7 +18,7 @@ set ytics out nomirror
 set offset 1.0,0,0,0
 
 set xtics 0,1,4
-set xrange [0:5]
+set xrange [0:4]
 set ytics 0,10,100
 set yrange [1:50]
 
@@ -27,13 +27,13 @@ set ylabel "Memory usage"
 
 set format y "%.0f%%"
 
-set output '../../figures/mem-leveledCompare.pdf'
+set output '../../figures/mem-leveledCompare-u.pdf'
 
 #set title "Memory usage for multi-hop execution"
 set title ""
 
-plot '../../results/nested2/mem.out' u 10:11:12:xtic(1) ti 'Depth 2' ls 1, \
-	'../../results/nested3/mem.out' u 10:11:12:xtic(1) ti 'Depth 3' ls 2
+plot '../../results/nested2/mem-no-4-hubs.out' u 10:11:12:xtic(1) ti 'Two-hop' ls 1, \
+	'../../results/nested3/mem-no-4-hubs.out' u 10:11:12:xtic(1) ti 'Three-hop' ls 2
 
 unset output
 reset

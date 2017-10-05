@@ -26,13 +26,13 @@ set xlabel "Number of hubs"
 
 set format y "%.0f"
 
-set output '../../figures/amdahl-leveledCompare.pdf'
+set output '../../figures/amdahl-leveledCompare-u.pdf'
 
 #set title "Solmuhub and Amdahl's law, multi-hop execution"
 set title ""
 
-plot '../../data/amdahl-types-full' u 4:xtic(1) ti 'Depth 2' ls 4, \
-'../../data/amdahl-types-full' u 5:xtic(1) ti 'Depth 3' ls 3, \
+plot '../../data/amdahl-types-full' u 4:xtic(1) ti 'Two-hop' ls 4, \
+'../../data/amdahl-types-full' u 5:xtic(1) ti 'Three-hop' ls 3, \
 '' u 8:xtic(1) ti '80% distributed' lt 2 lc rgb "#555555" lw 2, \
 '' u 9:xtic(1) ti '90% distributed' lt 3 lc rgb "#555555" lw 2, \
 '' u 10:xtic(1) ti '95%, SH theor. max' lt 4 lc rgb "#555555" lw 2, \
